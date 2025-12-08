@@ -94,14 +94,16 @@ export default function SponsorsPage() {
             and STEM leaders. Your support directly impacts thousands of students worldwide.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register">
+            <Link href="/sponsors/apply">
               <Button className="bg-aviation-gold hover:bg-aviation-gold/90 text-aviation-navy">
-                Become a Sponsor
+                Apply to Become a Sponsor
               </Button>
             </Link>
-            <Button variant="outline">
-              Download Sponsorship Packet
-            </Button>
+            <Link href="/donate">
+              <Button variant="outline">
+                Donate Now
+              </Button>
+            </Link>
           </div>
         </div>
 
@@ -210,14 +212,16 @@ export default function SponsorsPage() {
               empower the next generation of aviation and STEM leaders.
             </CardDescription>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register">
+              <Link href="/sponsors/apply">
                 <Button className="bg-aviation-gold hover:bg-aviation-gold/90 text-aviation-navy">
-                  Become a Sponsor Today
+                  Apply to Become a Sponsor
                 </Button>
               </Link>
-              <Button variant="outline" className="border-white text-white hover:bg-white/10">
-                Contact Us
-              </Button>
+              <Link href="/donate">
+                <Button variant="outline" className="border-white text-white hover:bg-white/10">
+                  Make a Donation
+                </Button>
+              </Link>
             </div>
             <p className="text-sm text-gray-400 mt-6">
               Hidden Treasures Network is operated by Infinity Aero Club Tampa Bay, Inc., a 501(c)(3) nonprofit organization.
