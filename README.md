@@ -1,170 +1,60 @@
 # Hidden Treasures Network
 
-A modern web application for Hidden Treasures Network - empowering the next generation through aviation and STEM education.
-
-## Features
-
-- **Hero Section**: Eye-catching hero section with aviation students diversity imagery
-- **Mission Statement**: Comprehensive mission section with STEM education visuals
-- **Success Stories**: Inspiring testimonials from program alumni with aviation-themed portraits
-- **Footer**: Professional footer with subtle aviation background
-
-## Tech Stack
-
-- **Next.js 14**: React framework with App Router
-- **TypeScript**: Type-safe development
-- **Tailwind CSS**: Utility-first styling
-- **next/image**: Optimized image loading from Unsplash
-
-## Getting Started
-
-Install dependencies:
 > Empowering the Next Generation Through Aviation & STEM
 
-A modern, responsive website for Hidden Treasures Network - a global network of organizations, mentors, and innovators dedicated to impacting one million lives by 2030.
+A global platform connecting aviation and STEM education organizations, mentors, students, and sponsors to impact **one million lives by 2030**.
 
-## Features
+## 🌟 Overview
 
-- **Hero Section** - Engaging homepage with headline, subheadline, and call-to-action buttons
-- **Animated Stats** - Counter animations showcasing impact metrics
-- **Mission Statement** - Clear articulation of organizational purpose
-- **Success Stories** - Testimonials from program participants
-- **Responsive Design** - Optimized for all devices (mobile, tablet, desktop)
-- **Modern Stack** - Built with React, TypeScript, and Vite
-
-## Tech Stack
-
-- **React 18** - Modern UI library
-- **TypeScript** - Type-safe development
-- **Vite** - Fast build tool and dev server
-- **CSS3** - Custom styling with animations
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (version 16 or higher)
-- npm or yarn package manager
-
-### Installation
-
-1. Clone the repository:
-A global platform connecting aviation and STEM education organizations, mentors, students, and sponsors under a unified mission to impact **one million lives by 2030**.
+Hidden Treasures Network is the digital layer of Flight Plan 2030, an initiative by **Infinity Aero Club Tampa Bay, Inc.** (501(c)(3) nonprofit). Led by **Ricardo "Tattoo" Foster, LCDR USN (Ret.)**, our mission is to unite aviation and STEM education organizations worldwide to share resources, amplify impact, and create pathways for underserved youth.
 
 ## 🎯 Mission
 
 Connect aviation and STEM education organizations worldwide to share resources, amplify impact, and empower underserved youth through aviation, STEM, and entrepreneurship education.
 
-## 🏢 About
-A professional web application connecting aviation and STEM education organizations, mentors, students, and sponsors under a unified mission to impact one million lives by 2030.
-
-## 🎯 Mission
-
-To empower underserved youth worldwide through aviation, STEM, and entrepreneurship education by creating a unified network that amplifies resources, shares knowledge, and multiplies impact across organizations.
-
-## 🏢 Organization
-
-**Parent Organization:** Infinity Aero Club Tampa Bay, Inc. (501c3 nonprofit)
-**Founder & CEO:** Ricardo "Tattoo" Foster, LCDR USN (Ret.)
-**Domain:** [HiddenTreasuresNetwork.org](https://hiddentreasuresnetwork.org)
-
 ## 🚀 Tech Stack
 
-- **Framework:** Next.js 14 with App Router
-- **Language:** TypeScript (strict mode)
-- **Styling:** Tailwind CSS with custom brand configuration
-## 🚀 Features
-
-- **Organization Profiles** - Showcase aviation and STEM programs globally
-- **Interactive World Map** - Discover and connect with partner organizations using Mapbox
-- **Impact Dashboard** - Track collective progress toward the 2030 goal with real-time analytics
-- **Resource Library** - Share curricula, lesson plans, and educational materials
-- **Mentor Matching** - Connect experienced professionals with aspiring students
-- **Sponsorship Platform** - Connect organizations with sponsors
-- **Authentication System** - Secure login with email/password and Google OAuth
-
-## 🛠 Tech Stack
-
-- **Framework:** Next.js 14 with App Router
+- **Framework:** Next.js 14 (App Router)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
-- **UI Components:** Shadcn/ui
+- **UI Components:** shadcn/ui
+- **Icons:** lucide-react
 - **Database:** Firebase Firestore
 - **Authentication:** Firebase Authentication
 - **Storage:** Firebase Storage
-- **Maps:** Mapbox GL JS
-- **Charts:** Recharts
 - **Forms:** React Hook Form + Zod
-- **Icons:** Lucide React
+- **Charts:** Recharts
+- **Maps:** Mapbox GL JS
 - **Deployment:** Vercel
 
-## 🎨 Brand Design System
+## 📋 Prerequisites
 
-### Color Palette
+- Node.js >= 18.0.0
+- npm >= 9.0.0
+- Firebase account
+- Mapbox account (for map features)
 
-- **Primary (Sky Blue):** `#0ea5e9` - Representing limitless possibilities
-- **Navy:** `#1e3a8a` - Professional, trustworthy
-- **Accent Colors:**
-  - Red: `#dc2626`
-  - Gold: `#f59e0b`
-  - Green: `#10b981`
+## 🛠️ Setup Instructions
 
-### Typography
-
-- **Headings:** Montserrat (600, 700, 800)
-- **Body:** Inter (400, 500, 600)
-- **Display/Numbers:** Bebas Neue (400)
-
-## 👥 User Roles
-
-The platform supports five distinct user types:
-
-1. **Student** - Youth participants with progress tracking
-2. **Mentor** - Aviation professionals and volunteers
-3. **Organization** - Partner affiliates and program managers
-4. **Sponsor** - Donors and corporate partners
-5. **Admin** - Infinity Aero Club staff with full system access
-
-## 🛠️ Getting Started
-
-### Prerequisites
-
-- Node.js 18.0 or higher
-- npm 9.0 or higher
-- Firebase project (for backend services)
-- Mapbox account (for maps integration)
-
-### Installation
-
-1. **Clone the repository:**
+### 1. Clone & Install
 
 ```bash
 git clone https://github.com/infinitycollaborative/Hidden-Treasures-Network.git
 cd Hidden-Treasures-Network
-```
-
-2. Install dependencies:
-2. **Install dependencies:**
-
-```bash
 npm install
 ```
 
-Run the development server:
-3. Start the development server:
-3. **Set up environment variables:**
-
-Copy the environment template and fill in your credentials:
+### 2. Configure Environment Variables
 
 ```bash
-cp .env.local.template .env.local
+cp .env.local.example .env.local
 ```
 
-Edit `.env.local` with your Firebase and Mapbox credentials:
+Update `.env.local` with your credentials:
 
 ```env
-# Firebase Configuration
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key_here
+# Firebase Configuration (from Firebase Console)
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
@@ -172,354 +62,168 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
 
-# Mapbox Configuration
-NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_token
+# Mapbox Configuration (from Mapbox Account)
+NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_token
 ```
 
-4. **Run the development server:**
+### 3. Set Up Firebase
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Create a new project
+3. Enable **Authentication** (Email/Password + Google)
+4. Create **Firestore Database** (production mode)
+5. Enable **Storage**
+6. Copy configuration to `.env.local`
+
+### 4. Run Development Server
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## Image Optimization
-
-All images are sourced from Unsplash and optimized using Next.js `next/image` component with:
-- Automatic lazy loading
-- Responsive image sizing
-- WebP format support
-- Priority loading for above-the-fold content
-
-## Development
-
-- `npm run dev` - Start development server
-- `npm run build` - Create production build
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-
-## License
-
-Copyright © 2025 Hidden Treasures Network. All rights reserved.
-4. Open your browser and navigate to `http://localhost:5173`
-
-### Build for Production
-
-To create a production build:
-
-```bash
-npm run build
-```
-
-The optimized files will be in the `dist` directory.
-
-To preview the production build:
-
-```bash
-npm run preview
-```
-
-## Project Structure
-
-```
-Hidden-Treasures-Network/
-├── src/
-│   ├── components/
-│   │   ├── Hero.tsx           # Homepage hero section
-│   │   ├── Hero.css
-│   │   ├── Stats.tsx          # Statistics counters
-│   │   ├── Stats.css
-│   │   ├── Mission.tsx        # Mission statement
-│   │   ├── Mission.css
-│   │   ├── SuccessStories.tsx # Testimonials
-│   │   ├── SuccessStories.css
-│   │   ├── Footer.tsx         # Footer with contact info
-│   │   └── Footer.css
-│   ├── App.tsx                # Main app component
-│   ├── App.css
-│   ├── main.tsx               # App entry point
-│   └── index.css              # Global styles
-├── index.html
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-└── README.md
-```
-
-## Impact Metrics
-
-- **50+** Partner Organizations
-- **200,000+** Youth Impacted
-- **25+** Countries Reached
-- **1,200+** Discovery Flights Completed
-
-## About
-
-Hidden Treasures Network is a program of Infinity Aero Club Tampa Bay, Inc., a 501(c)(3) nonprofit organization dedicated to inspiring, training, and launching the next generation of aviators and innovators.
-
-## Contact
-
-- **Email:** info@hiddenttreasuresnetwork.org
-- **Phone:** (757) 353-8610
-- **Location:** Wesley Chapel, Florida, USA
-
-## License
-
-Copyright © 2025 Hidden Treasures Network. All rights reserved.
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-### Firebase Setup
-
-1. Create a new Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
-2. Enable Authentication (Email/Password and Google providers)
-3. Create a Firestore database
-4. Set up Firebase Storage
-5. Copy your configuration to `.env.local`
-
-### Mapbox Setup
-
-1. Sign up at [mapbox.com](https://mapbox.com)
-2. Get your access token from your account dashboard
-3. Add the token to `.env.local`
-## 📋 Prerequisites
-
-- Node.js 18+ and npm
-- Firebase account
-- Mapbox account (for map features)
-
-## 🔧 Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/infinitycollaborative/Hidden-Treasures-Network.git
-   cd Hidden-Treasures-Network
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-
-   Create a `.env.local` file in the root directory:
-   ```env
-   # Firebase Configuration
-   NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key_here
-   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
-   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-   NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-
-   # Mapbox Configuration
-   NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_token_here
-   ```
-
-4. **Firebase Setup**
-   - Go to [Firebase Console](https://console.firebase.google.com/)
-   - Create a new project
-   - Enable Authentication (Email/Password and Google)
-   - Create a Firestore Database
-   - Enable Storage
-   - Copy your config values to `.env.local`
-
-5. **Mapbox Setup**
-   - Go to [Mapbox](https://www.mapbox.com/)
-   - Create a free account
-   - Get your access token
-   - Add to `.env.local`
-
-## 🚀 Development
-
-Run the development server:
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to view the application.
-
-## 📦 Build
-
-Build the production application:
-
-```bash
-npm run build
-```
-
-## 🚢 Deployment
-
-### Deploy to Vercel
-
-1. Push your code to GitHub
-2. Import your repository in [Vercel](https://vercel.com)
-3. Add environment variables in Vercel project settings
-4. Deploy!
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/infinitycollaborative/Hidden-Treasures-Network)
-
-## 🎨 Brand Design
-
-### Color Palette
-
-- **Aviation Navy:** `#0A2540` - Primary brand color
-- **Aviation Sky:** `#0EA5E9` - Accent color
-- **Aviation Gold:** `#F59E0B` - Secondary accent
-- **Aviation Silver:** `#94A3B8` - Tertiary color
-- **Aviation Crimson:** `#DC2626` - Alert/emphasis color
+Open [http://localhost:3000](http://localhost:3000)
 
 ## 📁 Project Structure
 
 ```
 Hidden-Treasures-Network/
-├── app/                    # Next.js App Router pages
-│   ├── layout.tsx         # Root layout with fonts
-│   ├── page.tsx           # Home page
-│   └── globals.css        # Global styles
-├── components/            # React components
-│   └── ui/               # Shadcn/ui components
-├── lib/                  # Utility functions and configs
-│   ├── firebase.ts       # Firebase initialization
-│   └── utils.ts          # Helper functions
-├── types/                # TypeScript type definitions
-│   └── index.ts          # User roles and data models
-├── hooks/                # Custom React hooks
-├── config/               # Application configuration
-└── public/               # Static assets
+├── app/                    # Next.js App Router
+│   ├── (auth)/            # Auth pages (login, register, forgot-password)
+│   ├── dashboard/         # Role-based dashboards
+│   │   ├── student/
+│   │   ├── mentor/
+│   │   ├── organization/
+│   │   ├── sponsor/
+│   │   └── admin/
+│   ├── network/           # Network features (map, directory)
+│   ├── impact/            # Impact dashboard & stories
+│   ├── resources/         # Resource library
+│   ├── events/            # Events calendar
+│   ├── get-involved/      # Get involved page
+│   ├── about/             # About page
+│   └── layout.tsx         # Root layout
+├── components/
+│   ├── layout/            # Header, Footer, Navigation
+│   ├── ui/                # shadcn/ui components
+│   └── auth/              # Auth components
+├── lib/
+│   ├── firebase.ts        # Firebase config
+│   ├── auth.ts            # Auth utilities
+│   ├── validations.ts     # Zod schemas
+│   └── utils.ts           # Helpers
+├── hooks/
+│   └── use-auth.ts        # Auth hook
+├── types/
+│   └── index.ts           # TypeScript types
+└── public/                # Static assets
 ```
 
-## 🔧 Available Scripts
+## 👥 User Roles
+
+The platform supports five user roles with distinct dashboards:
+
+1. **Student** - Access mentorship and educational programs
+2. **Mentor** - Share expertise and guide students
+3. **Organization** - Manage programs and collaborate
+4. **Sponsor** - Support programs and track impact
+5. **Admin** - Platform administration
+
+## 🔐 Authentication Flow
+
+1. User registers with email/password or Google OAuth
+2. Selects role (student, mentor, organization, sponsor)
+3. Completes profile information
+4. User profile stored in Firestore `users` collection
+5. Redirected to role-specific dashboard
+
+## 🗄️ Data Structure
+
+### users Collection
+
+```typescript
+{
+  uid: string
+  email: string
+  role: 'student' | 'mentor' | 'organization' | 'sponsor' | 'admin'
+  displayName: string
+  organizationName?: string
+  location?: { city, state, country }
+  profileComplete: boolean
+  createdAt: Timestamp
+  lastLoginAt?: Timestamp
+}
+```
+
+See `types/index.ts` for complete type definitions.
+
+## 🎨 Brand Design
+
+### Colors
+- **Primary Sky Blue:** `#0ea5e9`
+- **Navy:** `#1e3a8a` to `#0c4a6e`
+- **Gold:** `#f59e0b`
+- **Red:** `#dc2626` (Red Tail tribute)
+
+### Typography
+- **Headings:** Montserrat (600-800)
+- **Body:** Inter (400-600)
+- **Display:** Bebas Neue
+
+## 🚢 Deployment
+
+### Vercel (Recommended)
+
+```bash
+npm install -g vercel
+vercel
+```
+
+Set environment variables in Vercel dashboard under Project Settings > Environment Variables.
+
+## 📜 Scripts
 
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm start` - Start production server
 - `npm run lint` - Run ESLint
-- `npm run type-check` - Run TypeScript type checking
+- `npm run type-check` - TypeScript type checking
 
-## 🌐 Deployment
+## ✅ Phase 1 Deliverables (Complete)
 
-This project is configured for deployment on [Vercel](https://vercel.com):
-
-1. Push your code to GitHub
-2. Import the repository in Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy!
-
-## 📋 Phase 1 Deliverables (Week 1)
-
-- [x] Project setup with Next.js 14 + TypeScript
+- [x] Next.js 14 + TypeScript setup
 - [x] Tailwind CSS with custom brand colors
-- [x] Firebase SDK integration
-- [x] Shadcn/ui components setup
-- [x] Custom fonts (Montserrat, Inter, Bebas Neue)
-- [x] TypeScript types for user roles
-- [x] Environment variables structure
-- [x] Basic home page layout
+- [x] Firebase integration (Auth, Firestore, Storage)
+- [x] shadcn/ui components
+- [x] Authentication system with role-based access
+- [x] Homepage with hero, mission, stats, stories, events
+- [x] Role-based dashboard routing
+- [x] Login, Register, Forgot Password pages
+- [x] Scaffolded dashboards for all 5 roles
+- [x] Scaffolded Network, Impact, Resources, Events pages
+- [x] Type definitions for all data models
+- [x] Responsive design system
 
 ## 🤝 Contributing
 
-This is a nonprofit project aimed at empowering underserved youth. Contributions are welcome!
+This is a nonprofit initiative. Contributions welcome!
 
-## 📄 License
-
-Copyright © 2024 Infinity Aero Club Tampa Bay, Inc. All rights reserved.
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
 
 ## 📞 Contact
 
-For more information about the Hidden Treasures Network:
-
 - **Website:** [HiddenTreasuresNetwork.org](https://hiddentreasuresnetwork.org)
 - **Email:** info@hiddentreasuresnetwork.org
+- **Organization:** Infinity Aero Club Tampa Bay, Inc.
+- **Founder:** Ricardo "Tattoo" Foster, LCDR USN (Ret.)
+
+## 📄 License
+
+Copyright © 2024-2025 Infinity Aero Club Tampa Bay, Inc. All rights reserved.
 
 ---
 
 **Built with ❤️ to impact one million lives by 2030**
-├── app/                    # Next.js app directory
-│   ├── about/             # About page
-│   ├── dashboard/         # User dashboard
-│   ├── impact/            # Impact tracking dashboard
-│   ├── login/             # Login page
-│   ├── map/               # Interactive world map
-│   ├── organizations/     # Organizations directory
-│   ├── register/          # Registration page
-│   ├── resources/         # Resource library
-│   ├── sponsors/          # Sponsorship page
-│   ├── layout.tsx         # Root layout
-│   ├── page.tsx           # Home page
-│   └── globals.css        # Global styles
-├── components/
-│   ├── layout/            # Layout components (navbar, footer)
-│   ├── map/               # Map components
-│   └── ui/                # Shadcn UI components
-├── config/
-│   └── firebase.ts        # Firebase configuration
-├── lib/
-│   └── utils.ts           # Utility functions
-├── public/                # Static assets
-└── package.json           # Dependencies
-```
-
-## 🔐 Authentication
-
-The platform supports:
-- Email/Password authentication
-- Google OAuth
-- Protected routes for authenticated users
-
-## 📊 Firestore Data Structure
-
-```
-users/
-  {userId}/
-    - name
-    - email
-    - organizationName
-    - userType
-    - role
-    - createdAt
-
-organizations/
-  {orgId}/
-    - name
-    - location
-    - description
-    - programs
-    - studentsImpacted
-    - contactInfo
-    - createdAt
-
-resources/
-  {resourceId}/
-    - title
-    - description
-    - category
-    - fileUrl
-    - uploadedBy
-    - createdAt
-```
-
-## 🤝 Contributing
-
-We welcome contributions! Please feel free to submit issues and pull requests.
-
-## 📝 License
-
-This project is owned by Infinity Aero Club Tampa Bay, Inc.
-
-## 📧 Contact
-
-For questions or support, contact:
-- **Email:** info@hiddentreasuresnetwork.org
-- **Website:** [HiddenTreasuresNetwork.org](https://hiddentreasuresnetwork.org)
-
-## 🌟 Acknowledgments
-
-Special thanks to all aviation and STEM education organizations working tirelessly to inspire and empower the next generation.
-
----
-
-**Mission: Impact One Million Lives by 2030**
-
-Built with ❤️ by the Hidden Treasures Network team

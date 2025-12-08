@@ -1,31 +1,72 @@
+'use client'
+
 import { useState, useEffect } from 'react'
 import { User, onAuthStateChanged } from 'firebase/auth'
-import { auth } from '@/lib/firebase'
+import { doc, onSnapshot } from 'firebase/firestore'
+import { auth, db } from '@/lib/firebase'
+import { UserProfile } from '@/lib/auth'
+
+interface UseAuthReturn {
+  user: User | null
+  profile: UserProfile | null
+  loading: boolean
+  isAuthenticated: boolean
+  role: string | null
+}
 
 /**
- * Custom hook to manage Firebase authentication state
- *
- * @returns Object containing current user, loading state, and authentication status
+ * Custom hook to manage Firebase authentication state and user profile
+ * Listens to both Auth state and Firestore profile changes
  */
-export function useAuth() {
+export function useAuth(): UseAuthReturn {
   const [user, setUser] = useState<User | null>(null)
+  const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    // Subscribe to auth state changes
+    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
       setUser(user)
       setIsAuthenticated(!!user)
-      setLoading(false)
+
+      if (!user) {
+        setProfile(null)
+        setLoading(false)
+        return
+      }
+
+      // Subscribe to user profile changes in Firestore
+      const unsubscribeProfile = onSnapshot(
+        doc(db, 'users', user.uid),
+        (doc) => {
+          if (doc.exists()) {
+            setProfile(doc.data() as UserProfile)
+          } else {
+            setProfile(null)
+          }
+          setLoading(false)
+        },
+        (error) => {
+          console.error('Error fetching user profile:', error)
+          setProfile(null)
+          setLoading(false)
+        }
+      )
+
+      // Return cleanup function for profile subscription
+      return () => unsubscribeProfile()
     })
 
-    // Cleanup subscription on unmount
-    return () => unsubscribe()
+    // Cleanup auth subscription on unmount
+    return () => unsubscribeAuth()
   }, [])
 
   return {
     user,
+    profile,
     loading,
     isAuthenticated,
+    role: profile?.role || null,
   }
 }
