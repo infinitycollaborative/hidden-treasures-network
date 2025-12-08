@@ -10,6 +10,7 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
+    --primary: 200 98% 48%;
     --primary: 200 91% 48%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
@@ -22,6 +23,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
+    --ring: 200 98% 48%;
     --ring: 200 91% 48%;
     --radius: 0.5rem;
   }
@@ -33,6 +35,8 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
+    --primary: 200 98% 48%;
+    --primary-foreground: 210 40% 98%;
     --primary: 200 91% 48%;
     --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 217.2 32.6% 17.5%;
@@ -45,6 +49,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
+    --ring: 200 98% 48%;
     --ring: 200 91% 48%;
   }
 }
@@ -58,6 +63,28 @@
   }
 }
 
+/* Custom scrollbar */
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Aviation-themed gradients */
+.gradient-sky {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%);
+}
+
+.gradient-navy {
+  background: linear-gradient(135deg, #1e3a8a 0%, #334e68 100%);
+}
+
+.gradient-hero {
+  background: linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0ea5e9 100%);
 /* Mapbox GL styles */
 @import 'mapbox-gl/dist/mapbox-gl.css';
 
