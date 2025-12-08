@@ -9,6 +9,11 @@ export type NotificationType =
   | 'resource_rejected'
   | 'metrics_reminder'
   | 'message_received'
+  | 'session_requested'
+  | 'session_approved'
+  | 'session_declined'
+  | 'session_cancelled'
+  | 'session_reminder'
   | 'system_broadcast'
 
 export interface AppNotification {
