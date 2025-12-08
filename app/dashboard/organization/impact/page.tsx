@@ -16,6 +16,7 @@ export default function OrganizationImpactDashboard() {
   const [submitting, setSubmitting] = useState(false)
 
   const orgId = profile?.uid || 'org-123'
+  const orgId = profile?.organizationId || 'org-123'
 
   const monthlyTrends = useMemo(
     () => [
