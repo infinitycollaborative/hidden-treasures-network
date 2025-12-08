@@ -5,6 +5,15 @@ import { Timestamp } from 'firebase/firestore'
  */
 export type UserRole = 'student' | 'mentor' | 'organization' | 'sponsor' | 'admin'
 
+export interface NotificationPreferences {
+  email: boolean
+  inApp: boolean
+  eventReminders: boolean
+  resourceUpdates: boolean
+  mentorMessages: boolean
+  systemAnnouncements: boolean
+}
+
 /**
  * Base User Interface
  * Common fields shared across all user types
@@ -19,6 +28,7 @@ export interface BaseUser {
   updatedAt: Timestamp
   isActive: boolean
   emailVerified: boolean
+  notificationPreferences?: NotificationPreferences
 }
 
 /**

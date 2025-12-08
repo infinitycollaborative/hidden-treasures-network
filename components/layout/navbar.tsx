@@ -4,9 +4,12 @@ import Link from "next/link"
 import { useState } from "react"
 import { Menu, X, Plane } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { NotificationBell } from "@/components/notifications/NotificationBell"
+import { useAuth } from "@/hooks/use-auth"
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const { isAuthenticated } = useAuth()
 
   const toggleMenu = () => setIsOpen(!isOpen)
 
@@ -49,6 +52,7 @@ export function Navbar() {
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-3">
+            {isAuthenticated ? <NotificationBell /> : null}
             <Link href="/login">
               <Button variant="ghost" className="text-white hover:bg-aviation-sky/20">
                 Sign In
