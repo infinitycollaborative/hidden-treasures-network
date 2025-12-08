@@ -1,0 +1,167 @@
+'use client'
+
+import { useEffect, useState, useRef } from 'react'
+import { Message, MessageThread } from '@/types/message'
+import { 
+  getMessagesForThread, 
+  subscribeToMessages, 
+  markThreadRead 
+} from '@/lib/db-messages'
+import { getUserProfile } from '@/lib/auth'
+import { Card } from '@/components/ui/card'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Loader2 } from 'lucide-react'
+import { useAuth } from '@/hooks/use-auth'
+import { MessageInput } from './MessageInput'
+
+interface MessageViewProps {
+  threadId: string
+  thread: MessageThread | null
+}
+
+export function MessageView({ threadId, thread }: MessageViewProps) {
+  const { user } = useAuth()
+  const [messages, setMessages] = useState<Message[]>([])
+  const [loading, setLoading] = useState(true)
+  const [otherUserName, setOtherUserName] = useState<string>('')
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!threadId || !user?.uid) return
+
+    setLoading(true)
+
+    // Subscribe to messages
+    const unsubscribe = subscribeToMessages(threadId, (newMessages) => {
+      setMessages(newMessages)
+      setLoading(false)
+      
+      // Scroll to bottom when new messages arrive
+      setTimeout(() => {
+        if (scrollRef.current) {
+          scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+        }
+      }, 100)
+    })
+
+    // Mark thread as read
+    markThreadRead(threadId, user.uid)
+
+    return () => unsubscribe()
+  }, [threadId, user?.uid])
+
+  useEffect(() => {
+    if (!thread || !user?.uid) return
+
+    // Load other participant's name
+    const loadOtherUserName = async () => {
+      const otherUserId = thread.participantIds.find(id => id !== user.uid)
+      if (otherUserId) {
+        try {
+          const profile = await getUserProfile(otherUserId)
+          setOtherUserName(profile?.displayName || 'Unknown User')
+        } catch (error) {
+          console.error('Error loading user:', error)
+          setOtherUserName('Unknown User')
+        }
+      }
+    }
+
+    loadOtherUserName()
+  }, [thread, user?.uid])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="h-8 w-8 animate-spin text-aviation-sky" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="border-b p-4 bg-white">
+        <h2 className="text-xl font-semibold text-gray-900">{otherUserName}</h2>
+      </div>
+
+      {/* Messages */}
+      <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+        <div className="space-y-4">
+          {messages.length === 0 ? (
+            <div className="text-center text-gray-500 py-8">
+              No messages yet. Start the conversation!
+            </div>
+          ) : (
+            messages.map((message) => (
+              <MessageBubble
+                key={message.id}
+                message={message}
+                isOwn={message.senderId === user?.uid}
+              />
+            ))
+          )}
+        </div>
+      </ScrollArea>
+
+      {/* Input */}
+      <div className="border-t p-4 bg-white">
+        <MessageInput threadId={threadId} />
+      </div>
+    </div>
+  )
+}
+
+interface MessageBubbleProps {
+  message: Message
+  isOwn: boolean
+}
+
+function MessageBubble({ message, isOwn }: MessageBubbleProps) {
+  return (
+    <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
+      <div className={`flex gap-2 max-w-[70%] ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
+        {!isOwn && (
+          <Avatar className="h-8 w-8 mt-1">
+            <AvatarFallback className="text-xs">U</AvatarFallback>
+          </Avatar>
+        )}
+        <div>
+          <div
+            className={`px-4 py-2 rounded-lg ${
+              isOwn
+                ? 'bg-aviation-sky text-white'
+                : 'bg-gray-100 text-gray-900'
+            }`}
+          >
+            <p className="text-sm whitespace-pre-wrap break-words">{message.body}</p>
+          </div>
+          <div className={`text-xs text-gray-500 mt-1 ${isOwn ? 'text-right' : 'text-left'}`}>
+            {formatTimestamp(message.createdAt)}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function formatTimestamp(timestamp: any): string {
+  if (!timestamp) return ''
+  
+  try {
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMs / 3600000)
+
+    if (diffMins < 1) return 'Just now'
+    if (diffMins < 60) return `${diffMins}m`
+    if (diffHours < 24) return `${diffHours}h`
+    
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  } catch (error) {
+    return ''
+  }
+}
