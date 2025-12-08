@@ -45,6 +45,7 @@ export async function recalculateNetworkMetrics(): Promise<void> {
       acc.totalEventsHosted += month.eventsHosted
       acc.totalCertifications += month.certifications
       acc.totalVolunteers += month.volunteerHours
+      acc.totalVolunteerHours += month.volunteerHours
       return acc
     },
     {
@@ -53,6 +54,7 @@ export async function recalculateNetworkMetrics(): Promise<void> {
       totalEventsHosted: 0,
       totalCertifications: 0,
       totalVolunteers: 0,
+      totalVolunteerHours: 0,
     }
   )
 
