@@ -3,16 +3,18 @@
 import { useEffect, useState, useRef } from 'react'
 import { Message, MessageThread } from '@/types/message'
 import { 
-  getMessagesForThread, 
   subscribeToMessages, 
   markThreadRead 
 } from '@/lib/db-messages'
 import { getUserProfile } from '@/lib/auth'
-import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Loader2 } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
+import { formatShortTime } from '@/lib/utils'
 import { MessageInput } from './MessageInput'
+
+// Delay for auto-scrolling to bottom when new messages arrive
+const SCROLL_DELAY_MS = 100
 
 interface MessageViewProps {
   threadId: string
@@ -41,7 +43,7 @@ export function MessageView({ threadId, thread }: MessageViewProps) {
         if (scrollRef.current) {
           scrollRef.current.scrollTop = scrollRef.current.scrollHeight
         }
-      }, 100)
+      }, SCROLL_DELAY_MS)
     })
 
     // Mark thread as read
@@ -139,30 +141,10 @@ function MessageBubble({ message, isOwn }: MessageBubbleProps) {
             <p className="text-sm whitespace-pre-wrap break-words">{message.body}</p>
           </div>
           <div className={`text-xs text-gray-500 mt-1 ${isOwn ? 'text-right' : 'text-left'}`}>
-            {formatTimestamp(message.createdAt)}
+            {formatShortTime(message.createdAt)}
           </div>
         </div>
       </div>
     </div>
   )
-}
-
-function formatTimestamp(timestamp: any): string {
-  if (!timestamp) return ''
-  
-  try {
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
-    const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffMins = Math.floor(diffMs / 60000)
-    const diffHours = Math.floor(diffMs / 3600000)
-
-    if (diffMins < 1) return 'Just now'
-    if (diffMins < 60) return `${diffMins}m`
-    if (diffHours < 24) return `${diffHours}h`
-    
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  } catch (error) {
-    return ''
-  }
 }

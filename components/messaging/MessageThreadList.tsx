@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import { MessageThread } from '@/types/message'
-import { getThreadsForUser, subscribeToThread } from '@/lib/db-messages'
+import { getThreadsForUser } from '@/lib/db-messages'
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { MessageSquare, Loader2 } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 import { getUserProfile } from '@/lib/auth'
+import { formatRelativeTime } from '@/lib/utils'
 import Link from 'next/link'
 
 interface MessageThreadListProps {
@@ -96,7 +96,7 @@ export function MessageThreadList({ selectedThreadId }: MessageThreadListProps) 
                     <h4 className="font-semibold text-gray-900 truncate">{participantName}</h4>
                     {thread.lastMessageAt && (
                       <span className="text-xs text-gray-500">
-                        {formatTimestamp(thread.lastMessageAt)}
+                        {formatRelativeTime(thread.lastMessageAt)}
                       </span>
                     )}
                   </div>
@@ -111,26 +111,4 @@ export function MessageThreadList({ selectedThreadId }: MessageThreadListProps) 
       })}
     </div>
   )
-}
-
-function formatTimestamp(timestamp: any): string {
-  if (!timestamp) return ''
-  
-  try {
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
-    const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffMins = Math.floor(diffMs / 60000)
-    const diffHours = Math.floor(diffMs / 3600000)
-    const diffDays = Math.floor(diffMs / 86400000)
-
-    if (diffMins < 1) return 'Just now'
-    if (diffMins < 60) return `${diffMins}m ago`
-    if (diffHours < 24) return `${diffHours}h ago`
-    if (diffDays < 7) return `${diffDays}d ago`
-    
-    return date.toLocaleDateString()
-  } catch (error) {
-    return ''
-  }
 }
