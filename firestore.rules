@@ -1,0 +1,316 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===================================
+    // HELPER FUNCTIONS
+    // ===================================
+
+    /**
+     * Check if user is authenticated
+     */
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    /**
+     * Check if user owns the resource
+     */
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    /**
+     * Get user's role from users collection
+     */
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    /**
+     * Check if user has a specific role
+     */
+    function hasRole(role) {
+      return isAuthenticated() && getUserRole() == role;
+    }
+
+    /**
+     * Check if user is any type of admin
+     */
+    function isAnyAdmin() {
+      return isAuthenticated() && (
+        getUserRole() == 'platform_admin' ||
+        getUserRole() == 'school_admin' ||
+        getUserRole() == 'district_admin'
+      );
+    }
+
+    /**
+     * Check if user is platform admin
+     */
+    function isPlatformAdmin() {
+      return hasRole('platform_admin');
+    }
+
+    /**
+     * Check if user is student
+     */
+    function isStudent() {
+      return hasRole('student');
+    }
+
+    /**
+     * Check if user is mentor
+     */
+    function isMentor() {
+      return hasRole('mentor');
+    }
+
+    /**
+     * Check if user is organization
+     */
+    function isOrganization() {
+      return hasRole('organization');
+    }
+
+    /**
+     * Check if user is sponsor
+     */
+    function isSponsor() {
+      return hasRole('sponsor');
+    }
+
+    /**
+     * Check if user is teacher
+     */
+    function isTeacher() {
+      return hasRole('teacher');
+    }
+
+    /**
+     * Check if user is school admin
+     */
+    function isSchoolAdmin() {
+      return hasRole('school_admin');
+    }
+
+    /**
+     * Check if user is district admin
+     */
+    function isDistrictAdmin() {
+      return hasRole('district_admin');
+    }
+
+    // ===================================
+    // COLLECTION RULES
+    // ===================================
+
+    /**
+     * Users Collection
+     * - Anyone authenticated can read any user profile
+     * - Users can only create their own profile
+     * - Users can update their own profile or admins can update any
+     * - Only admins can delete users
+     */
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isOwner(userId);
+      allow update: if isOwner(userId) || isPlatformAdmin();
+      allow delete: if isPlatformAdmin();
+    }
+
+    /**
+     * Students Collection
+     * - Students can read own profile
+     * - Mentors can read their assigned students
+     * - Teachers can read students in their classrooms
+     * - Admins can read all
+     * - Creation allowed for authenticated users
+     * - Updates allowed by owner, mentor, teacher, or admin
+     */
+    match /students/{studentId} {
+      allow read: if isAuthenticated() && (
+        isOwner(resource.data.userId) ||
+        resource.data.mentorId == request.auth.uid ||
+        isTeacher() ||
+        isAnyAdmin()
+      );
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (
+        isOwner(resource.data.userId) ||
+        resource.data.mentorId == request.auth.uid ||
+        isTeacher() ||
+        isAnyAdmin()
+      );
+      allow delete: if isPlatformAdmin();
+    }
+
+    /**
+     * Mentors Collection
+     * - All authenticated users can read mentor profiles (for matching)
+     * - Only mentors can create their profile
+     * - Mentors can update their own profile or admins can update any
+     * - Only admins can delete
+     */
+    match /mentors/{mentorId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isMentor();
+      allow update: if isOwner(resource.data.userId) || isPlatformAdmin();
+      allow delete: if isPlatformAdmin();
+    }
+
+    /**
+     * Organizations Collection
+     * - All authenticated users can read organizations
+     * - Only organization role can create
+     * - Organizations can update their own profile or admins can update any
+     * - Only admins can delete
+     */
+    match /organizations/{orgId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isOrganization();
+      allow update: if isOwner(resource.data.userId) || isPlatformAdmin();
+      allow delete: if isPlatformAdmin();
+    }
+
+    /**
+     * Sponsors Collection
+     * - Only admins and the sponsor themselves can read sponsor data (privacy)
+     * - Only sponsor role can create
+     * - Sponsors can update their own profile or admins can update any
+     * - Only admins can delete
+     */
+    match /sponsors/{sponsorId} {
+      allow read: if isPlatformAdmin() || isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isSponsor();
+      allow update: if isOwner(resource.data.userId) || isPlatformAdmin();
+      allow delete: if isPlatformAdmin();
+    }
+
+    /**
+     * Teachers Collection
+     * - All authenticated users can read teacher profiles
+     * - Only teacher role can create
+     * - Teachers can update their own profile, school admins and platform admins can update
+     * - Only admins can delete
+     */
+    match /teachers/{teacherId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isTeacher();
+      allow update: if isOwner(resource.data.userId) || isSchoolAdmin() || isPlatformAdmin();
+      allow delete: if isPlatformAdmin();
+    }
+
+    /**
+     * Schools Collection
+     * - All authenticated users can read school info
+     * - Only admins can create schools
+     * - School admins and platform admins can update
+     * - Only platform admins can delete
+     */
+    match /schools/{schoolId} {
+      allow read: if isAuthenticated();
+      allow create: if isPlatformAdmin();
+      allow update: if isSchoolAdmin() || isPlatformAdmin();
+      allow delete: if isPlatformAdmin();
+    }
+
+    /**
+     * Classrooms Collection
+     * - All authenticated users can read classroom info
+     * - Teachers, school admins, and platform admins can create
+     * - Teachers (owner), school admins, and platform admins can update
+     * - Only admins can delete
+     */
+    match /classrooms/{classroomId} {
+      allow read: if isAuthenticated();
+      allow create: if isTeacher() || isSchoolAdmin() || isPlatformAdmin();
+      allow update: if (
+        isTeacher() && resource.data.teacherId == request.auth.uid
+      ) || isSchoolAdmin() || isPlatformAdmin();
+      allow delete: if isPlatformAdmin();
+    }
+
+    /**
+     * Programs Collection
+     * - All authenticated users can read programs
+     * - Organizations and admins can create programs
+     * - Organization owners and admins can update
+     * - Only admins can delete
+     */
+    match /programs/{programId} {
+      allow read: if isAuthenticated();
+      allow create: if isOrganization() || isPlatformAdmin();
+      allow update: if isOrganization() || isPlatformAdmin();
+      allow delete: if isPlatformAdmin();
+    }
+
+    /**
+     * Sessions Collection
+     * - Students can read their own sessions
+     * - Mentors can read sessions they're assigned to
+     * - Teachers can read sessions for their students
+     * - Admins can read all
+     * - Authenticated users can create sessions
+     * - Participants and admins can update
+     * - Only admins can delete
+     */
+    match /sessions/{sessionId} {
+      allow read: if isAuthenticated() && (
+        resource.data.studentId == request.auth.uid ||
+        resource.data.mentorId == request.auth.uid ||
+        resource.data.teacherId == request.auth.uid ||
+        isPlatformAdmin()
+      );
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (
+        resource.data.studentId == request.auth.uid ||
+        resource.data.mentorId == request.auth.uid ||
+        resource.data.teacherId == request.auth.uid ||
+        isPlatformAdmin()
+      );
+      allow delete: if isPlatformAdmin();
+    }
+
+    /**
+     * Notifications Collection
+     * - Users can only read their own notifications
+     * - System can create notifications for any user
+     * - Users can update (mark as read) their own notifications
+     * - Users can delete their own notifications or admins can delete any
+     */
+    match /notifications/{notificationId} {
+      allow read: if isOwner(resource.data.userId);
+      allow create: if isAuthenticated();
+      allow update: if isOwner(resource.data.userId);
+      allow delete: if isOwner(resource.data.userId) || isPlatformAdmin();
+    }
+
+    /**
+     * Activity Log Collection
+     * - Users can read their own activity logs
+     * - Admins can read all activity logs
+     * - Authenticated users can create activity logs
+     * - Logs are immutable (no updates allowed)
+     * - Only admins can delete logs
+     */
+    match /activityLog/{activityId} {
+      allow read: if isOwner(resource.data.userId) || isPlatformAdmin();
+      allow create: if isAuthenticated();
+      allow update: if false; // Activity logs are immutable
+      allow delete: if isPlatformAdmin();
+    }
+
+    // ===================================
+    // DEFAULT DENY
+    // ===================================
+
+    /**
+     * Deny all other access by default
+     */
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

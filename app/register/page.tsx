@@ -55,6 +55,14 @@ export default function RegisterPage() {
       bgColor: 'bg-green-50',
     },
     {
+      value: 'teacher' as UserRole,
+      title: 'Teacher',
+      description: 'Integrate curriculum in your classroom',
+      icon: GraduationCap,
+      color: 'text-indigo-600',
+      bgColor: 'bg-indigo-50',
+    },
+    {
       value: 'organization' as UserRole,
       title: 'Organization',
       description: 'Join the network and collaborate',
