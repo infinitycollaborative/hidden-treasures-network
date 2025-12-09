@@ -504,3 +504,191 @@ export interface OrganizationHealth {
   complianceIssues: string[]
   riskFactors: string[]
 }
+
+/**
+ * Phase 13: Gamification System Types
+ */
+
+// XP System Types
+export type XPCategory =
+  | 'badges'      // Earned from badge awards
+  | 'sessions'    // Earned from mentor sessions
+  | 'programs'    // Earned from program participation
+  | 'quests'      // Earned from completing quests
+  | 'events'      // Earned from event attendance
+  | 'mentoring'   // Earned from mentoring others
+  | 'other'       // Other sources
+
+export interface UserXP {
+  id: string
+  userId: string
+  totalXP: number
+  level: number
+  currentLevelXP: number // XP in current level (resets each level)
+  xpBreakdown: {
+    badges: number
+    sessions: number
+    programs: number
+    quests: number
+    events: number
+    mentoring: number
+    other: number
+  }
+  updatedAt: Timestamp
+  createdAt: Timestamp
+}
+
+export interface XPTransaction {
+  id: string
+  userId: string
+  amount: number // Can be positive or negative
+  category: XPCategory
+  reason: string
+  sourceId?: string // ID of badge, quest, session, etc.
+  timestamp: Timestamp
+  metadata?: Record<string, any>
+}
+
+// Badge System Types
+export type BadgeCategory =
+  | 'tuskegee_tribute'   // Honoring Tuskegee Airmen legacy
+  | 'hidden_treasures'   // HTN-specific achievements
+  | 'flight_milestones'  // Flight training achievements
+  | 'community'          // Community engagement
+  | 'mentorship'         // Mentoring achievements
+  | 'education'          // Educational milestones
+  | 'leadership'         // Leadership achievements
+  | 'innovation'         // Innovation & creativity
+  | 'special'            // Special/rare achievements
+
+export type BadgeTier = 'bronze' | 'silver' | 'gold' | 'platinum'
+
+export interface BadgeDefinition {
+  id: string
+  name: string
+  description: string
+  category: BadgeCategory
+  tier: BadgeTier
+  imageURL: string
+  xpReward: number
+
+  // Requirements
+  requirements: {
+    minLevel?: number
+    minAge?: number
+    maxAge?: number
+    requiredRole?: UserRole[]
+    prerequisiteBadges?: string[] // IDs of badges required first
+    customCondition?: string // Description of custom requirement
+  }
+
+  // Metadata
+  isActive: boolean
+  isSecret: boolean // Hidden until earned
+  rarityScore: number // 1-100, how rare this badge is
+  realWorldEquivalent?: string // e.g., "FAA Private Pilot License"
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+export interface UserBadge {
+  id: string
+  userId: string
+  badgeId: string
+  badgeName: string
+  badgeCategory: BadgeCategory
+  badgeTier: BadgeTier
+  imageURL: string
+  xpAwarded: number
+  reason: string // Why was this badge awarded
+  awardedBy?: string // User ID who awarded (if manual)
+  awardedAt: Timestamp
+  metadata?: Record<string, any>
+}
+
+// Quest System Types
+export type QuestType = 'daily' | 'weekly' | 'monthly' | 'special' | 'ongoing'
+export type QuestStatus = 'available' | 'in_progress' | 'completed' | 'expired'
+export type QuestDifficulty = 'easy' | 'medium' | 'hard' | 'expert'
+
+export interface QuestRequirement {
+  type: 'attend_event' | 'complete_session' | 'earn_badge' | 'reach_level' | 'custom'
+  target: number
+  current?: number
+  description: string
+  metadata?: Record<string, any>
+}
+
+export interface Quest {
+  id: string
+  title: string
+  description: string
+  type: QuestType
+  difficulty: QuestDifficulty
+
+  // Rewards
+  xpReward: number
+  badgeReward?: string // Badge ID awarded upon completion
+
+  // Requirements
+  requirements: QuestRequirement[]
+  minLevel?: number
+  maxLevel?: number
+  eligibleRoles: UserRole[]
+
+  // Timing
+  startDate?: Timestamp
+  endDate?: Timestamp
+
+  // Metadata
+  isActive: boolean
+  participantCount: number
+  completionCount: number
+  imageURL?: string
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+export interface UserQuest {
+  id: string
+  userId: string
+  questId: string
+  questTitle: string
+  status: QuestStatus
+  progress: QuestRequirement[] // Copy of requirements with current values
+  startedAt: Timestamp
+  completedAt?: Timestamp
+  expiresAt?: Timestamp
+}
+
+// Leaderboard Types
+export type LeaderboardType =
+  | 'global'          // All users
+  | 'regional'        // By country/region
+  | 'organizational'  // By organization
+  | 'age_group'       // By age bracket
+  | 'program'         // By program participation
+
+export type LeaderboardPeriod = 'all_time' | 'monthly' | 'weekly' | 'daily'
+
+export interface LeaderboardEntry {
+  rank: number
+  userId: string
+  displayName: string
+  photoURL?: string
+  totalXP: number
+  level: number
+  badgeCount: number
+  change?: number // Rank change from previous period (positive = moved up)
+}
+
+export interface Leaderboard {
+  id: string
+  type: LeaderboardType
+  period: LeaderboardPeriod
+  scope?: string // Country code, organization ID, program ID, etc.
+  entries: LeaderboardEntry[]
+  totalParticipants: number
+  lastUpdated: Timestamp
+  metadata?: Record<string, any>
+}

@@ -1,0 +1,219 @@
+// Phase 13: Gamification System - Firestore Security Rules
+// Add these rules to your main firestore.rules file
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'super_admin'];
+    }
+
+    // ============================================
+    // USER XP COLLECTION
+    // ============================================
+
+    match /userXP/{userId} {
+      // Users can read their own XP
+      // Everyone can read XP for leaderboards (no sensitive data)
+      allow read: if isAuthenticated();
+
+      // Only system (via Cloud Functions) can create/update XP
+      // Prevents XP manipulation
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // ============================================
+    // XP TRANSACTIONS COLLECTION
+    // ============================================
+
+    match /xpTransactions/{transactionId} {
+      // Users can read their own transaction history
+      allow read: if isAuthenticated() &&
+                     resource.data.userId == request.auth.uid;
+
+      // Only system can create transactions
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // ============================================
+    // BADGE DEFINITIONS COLLECTION
+    // ============================================
+
+    match /badgeDefinitions/{badgeId} {
+      // Everyone can read active badges
+      // Hidden badges are filtered client-side
+      allow read: if isAuthenticated();
+
+      // Only admins can create/modify badge definitions
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // USER BADGES COLLECTION
+    // ============================================
+
+    match /userBadges/{userBadgeId} {
+      // Users can read their own badges
+      // Others can read for profile viewing
+      allow read: if isAuthenticated();
+
+      // Only system can award badges (prevents self-awarding)
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // ============================================
+    // QUESTS COLLECTION
+    // ============================================
+
+    match /quests/{questId} {
+      // All authenticated users can read active quests
+      allow read: if isAuthenticated() && resource.data.isActive == true;
+
+      // Only admins can create/modify quests
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // USER QUESTS COLLECTION
+    // ============================================
+
+    match /userQuests/{userQuestId} {
+      // Users can read their own quests
+      allow read: if isAuthenticated() &&
+                     resource.data.userId == request.auth.uid;
+
+      // Users can start quests (create)
+      allow create: if isAuthenticated() &&
+                       request.resource.data.userId == request.auth.uid &&
+                       request.resource.data.status == 'in_progress';
+
+      // Only system can update quest progress (via Cloud Functions)
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // ============================================
+    // LEADERBOARDS COLLECTION
+    // ============================================
+
+    match /leaderboards/{leaderboardId} {
+      // All authenticated users can read leaderboards
+      allow read: if isAuthenticated();
+
+      // Only system can generate leaderboards (via scheduled functions)
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+}
+
+// ============================================
+// RECOMMENDED CLOUD FUNCTION TRIGGERS
+// ============================================
+
+/*
+  For security, gamification operations should be performed via Cloud Functions:
+
+  1. onAwardXP(userId, amount, category, reason)
+     - Validates XP amount
+     - Updates userXP document
+     - Creates xpTransaction record
+     - Checks for level-up
+     - Triggers notifications
+
+  2. onAwardBadge(userId, badgeId, reason)
+     - Validates badge requirements
+     - Checks for duplicates
+     - Creates userBadge record
+     - Awards XP for badge
+     - Triggers notifications
+
+  3. onCompleteQuest(userId, questId)
+     - Validates quest completion
+     - Awards quest rewards (XP + badge)
+     - Updates quest completion count
+     - Triggers notifications
+
+  4. generateLeaderboard(type, period, scope)
+     - Runs daily via Cloud Scheduler
+     - Queries userXP collection
+     - Generates leaderboard entries
+     - Stores in leaderboards collection
+
+  5. onMentorSessionComplete(sessionId)
+     - Awards XP for session completion
+     - Updates quest progress if applicable
+     - Checks for badge eligibility
+
+  6. onEventAttendance(userId, eventId)
+     - Awards event XP
+     - Updates quest progress
+     - Checks for community badges
+
+  Example implementation:
+
+  exports.awardXP = functions.firestore
+    .document('someTriggerPath/{id}')
+    .onCreate(async (snap, context) => {
+      const { userId, amount, category, reason } = snap.data();
+
+      // Validate and award XP using admin SDK
+      await admin.firestore().collection('userXP').doc(userId).update({
+        totalXP: admin.firestore.FieldValue.increment(amount),
+        [`xpBreakdown.${category}`]: admin.firestore.FieldValue.increment(amount)
+      });
+
+      // Create transaction log
+      await admin.firestore().collection('xpTransactions').add({
+        userId,
+        amount,
+        category,
+        reason,
+        timestamp: admin.firestore.FieldValue.serverTimestamp()
+      });
+    });
+*/
+
+// ============================================
+// DEPLOYMENT INSTRUCTIONS
+// ============================================
+
+/*
+  1. Merge these rules into your main firestore.rules file
+  2. Deploy: firebase deploy --only firestore:rules
+  3. Verify rules in Firebase Console
+  4. Implement Cloud Functions for write operations
+  5. Test with Firebase Emulator Suite before production
+
+  Security checklist:
+  ✓ XP cannot be self-awarded
+  ✓ Badges cannot be self-awarded
+  ✓ Quest progress requires validation
+  ✓ Leaderboards are read-only from client
+  ✓ All sensitive operations require Cloud Functions
+*/
