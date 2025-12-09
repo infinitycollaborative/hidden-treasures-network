@@ -2,17 +2,21 @@ import { Timestamp } from 'firebase/firestore'
 
 /**
  * User Role Types - Phase 11: Extended Admin Hierarchy
+ * Phase 14: Added Education Roles
  */
-export type UserRole = 
-  | 'student' 
-  | 'mentor' 
-  | 'organization' 
-  | 'sponsor' 
+export type UserRole =
+  | 'student'
+  | 'mentor'
+  | 'organization'
+  | 'sponsor'
   | 'admin'
   | 'super_admin'
   | 'country_admin'
   | 'regional_admin'
   | 'organization_admin'
+  | 'teacher'              // Phase 14: Classroom educator
+  | 'school_admin'         // Phase 14: School administrator
+  | 'district_admin'       // Phase 14: District administrator
 
 export interface NotificationPreferences {
   email: boolean
@@ -692,3 +696,415 @@ export interface Leaderboard {
   lastUpdated: Timestamp
   metadata?: Record<string, any>
 }
+
+/**
+ * Phase 14: School & Classroom Integration Types
+ */
+
+// School District Types
+export type DistrictType = 'public' | 'private' | 'charter' | 'independent'
+
+export interface District {
+  id: string
+  name: string
+  type: DistrictType
+  location: Location
+  contactPerson: ContactPerson
+
+  // Metadata
+  studentCount: number
+  schoolCount: number
+  teacherCount: number
+
+  // Settings
+  settings: {
+    requireBackgroundChecks: boolean
+    parentalConsentRequired: boolean
+    dataRetentionDays: number
+    allowDataSharing: boolean
+  }
+
+  // Status
+  isActive: boolean
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+// School Types
+export type SchoolType = 'elementary' | 'middle' | 'high' | 'k12' | 'alternative'
+export type SchoolStatus = 'active' | 'inactive' | 'pending_approval'
+
+export interface School {
+  id: string
+  districtId?: string
+  name: string
+  type: SchoolType
+  status: SchoolStatus
+
+  // Location
+  location: Location
+
+  // Contact
+  contactPerson: ContactPerson
+  principalName?: string
+  principalEmail?: string
+
+  // Metadata
+  studentCount: number
+  teacherCount: number
+  classroomCount: number
+  gradeRange: {
+    min: string // e.g., "K", "1", "9"
+    max: string // e.g., "5", "8", "12"
+  }
+
+  // Settings
+  settings: {
+    enableGamification: boolean
+    requireParentalConsent: boolean
+    allowDataSharing: boolean
+    autoEnrollStudents: boolean
+  }
+
+  // Administrators
+  adminIds: string[] // school_admin user IDs
+
+  // Status
+  isActive: boolean
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+// Classroom Types
+export type ClassroomStatus = 'active' | 'archived' | 'draft'
+
+export interface Classroom {
+  id: string
+  schoolId: string
+  districtId?: string
+
+  // Basic Info
+  name: string
+  subject?: string
+  gradeLevel?: string
+  academicYear: string // e.g., "2024-2025"
+  semester?: 'fall' | 'spring' | 'summer' | 'full_year'
+
+  // Teacher
+  teacherId: string
+  teacherName: string
+
+  // Join Code
+  joinCode: string // 6-character unique code
+  joinCodeExpiresAt?: Timestamp
+  allowJoinRequests: boolean
+
+  // Students
+  studentIds: string[]
+  maxStudents?: number
+
+  // Curriculum
+  moduleIds: string[] // Assigned curriculum modules
+
+  // Settings
+  settings: {
+    enableGamification: boolean
+    xpMultiplier: number // Default 1.0, can boost XP for activities
+    allowPeerReview: boolean
+    requireModuleCompletion: boolean
+  }
+
+  // Status
+  status: ClassroomStatus
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+// Classroom Roster Types
+export type EnrollmentStatus = 'active' | 'dropped' | 'completed' | 'pending'
+
+export interface ClassroomRoster {
+  id: string
+  classroomId: string
+  studentId: string
+  studentName: string
+
+  // Enrollment
+  enrollmentStatus: EnrollmentStatus
+  enrolledAt: Timestamp
+  droppedAt?: Timestamp
+  completedAt?: Timestamp
+
+  // Parental Consent (FERPA)
+  parentalConsentGiven: boolean
+  parentalConsentDate?: Timestamp
+  parentGuardianEmail?: string
+
+  // Progress
+  modulesCompleted: string[]
+  totalXPEarned: number
+  attendancePercentage: number
+
+  // Notes
+  teacherNotes?: string
+
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+// Curriculum Module Types
+export type ModuleDifficulty = 'beginner' | 'intermediate' | 'advanced' | 'expert'
+export type ModuleStatus = 'draft' | 'published' | 'archived'
+export type ModuleType = 'lesson' | 'assignment' | 'quiz' | 'project' | 'assessment'
+
+export interface CurriculumModule {
+  id: string
+
+  // Basic Info
+  title: string
+  description: string
+  type: ModuleType
+  difficulty: ModuleDifficulty
+
+  // Content
+  content: string // Markdown or HTML
+  resources: {
+    type: 'video' | 'pdf' | 'link' | 'file'
+    title: string
+    url: string
+  }[]
+
+  // Learning Objectives
+  objectives: string[]
+
+  // Requirements
+  prerequisites: string[] // Module IDs
+  estimatedDuration: number // minutes
+
+  // Gamification
+  xpReward: number
+  badgeReward?: string // Badge ID
+
+  // Grading
+  isGraded: boolean
+  passingScore?: number // Percentage (0-100)
+
+  // Metadata
+  subject: string
+  gradeLevel: string[]
+  tags: string[]
+
+  // Creator
+  createdBy: string
+  createdByName: string
+
+  // Status
+  status: ModuleStatus
+  publishedAt?: Timestamp
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+// Module Assignment Types
+export type AssignmentStatus = 'assigned' | 'in_progress' | 'submitted' | 'graded'
+
+export interface ModuleAssignment {
+  id: string
+  classroomId: string
+  moduleId: string
+  moduleName: string
+
+  // Assignment
+  assignedBy: string // Teacher ID
+  assignedTo: string[] // Student IDs (empty = all students)
+
+  // Dates
+  assignedAt: Timestamp
+  dueDate?: Timestamp
+  availableFrom?: Timestamp
+  availableUntil?: Timestamp
+
+  // Settings
+  allowLateSubmission: boolean
+  lateSubmissionPenalty?: number // Percentage
+  maxAttempts?: number
+
+  // Status
+  status: AssignmentStatus
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+// Student Progress Types
+export type ProgressStatus = 'not_started' | 'in_progress' | 'submitted' | 'graded' | 'completed'
+
+export interface StudentProgress {
+  id: string
+  studentId: string
+  classroomId: string
+  moduleId: string
+  assignmentId?: string
+
+  // Progress
+  status: ProgressStatus
+  progressPercentage: number // 0-100
+
+  // Timestamps
+  startedAt?: Timestamp
+  submittedAt?: Timestamp
+  gradedAt?: Timestamp
+  completedAt?: Timestamp
+
+  // Submission
+  submissionData?: {
+    answers: Record<string, any>
+    files: string[]
+    notes: string
+  }
+
+  // Grading
+  score?: number // Percentage (0-100)
+  feedback?: string
+  gradedBy?: string // Teacher ID
+
+  // Gamification
+  xpAwarded?: number
+  badgesAwarded?: string[]
+
+  // Attempts
+  attemptNumber: number
+  maxAttempts?: number
+
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+// Parental Consent Types (FERPA Compliance)
+export type ConsentStatus = 'pending' | 'granted' | 'denied' | 'expired'
+
+export interface ParentalConsent {
+  id: string
+  studentId: string
+  studentName: string
+
+  // Parent/Guardian
+  parentGuardianName: string
+  parentGuardianEmail: string
+  parentGuardianPhone?: string
+  relationship: 'parent' | 'guardian' | 'other'
+
+  // Consent
+  consentStatus: ConsentStatus
+  consentDate?: Timestamp
+  expirationDate?: Timestamp
+
+  // Scope
+  schoolId?: string
+  districtId?: string
+  classroomIds: string[]
+
+  // Permissions
+  permissions: {
+    allowDataCollection: boolean
+    allowDataSharing: boolean
+    allowThirdPartyTools: boolean
+    allowPhotography: boolean
+    allowPublicDisplay: boolean
+  }
+
+  // Verification
+  ipAddress?: string
+  verificationMethod: 'email' | 'phone' | 'in_person' | 'mail'
+  verificationToken?: string
+
+  // Notes
+  notes?: string
+
+  createdAt: Timestamp
+  updatedAt: Timestamp
+}
+
+// Teacher Profile Extension
+export interface TeacherProfile extends BaseUser {
+  role: 'teacher'
+
+  // Credentials
+  certifications: string[]
+  yearsOfExperience: number
+  education: {
+    degree: string
+    institution: string
+    year: number
+  }[]
+
+  // Teaching
+  subjects: string[]
+  gradeLevels: string[]
+  schoolId?: string
+  districtId?: string
+
+  // Background Check
+  backgroundCheckStatus: 'pending' | 'approved' | 'denied' | 'expired'
+  backgroundCheckDate?: Timestamp
+  backgroundCheckExpiresAt?: Timestamp
+
+  // Classrooms
+  classroomIds: string[]
+
+  // Settings
+  preferences: {
+    emailNotifications: boolean
+    gradeReminderFrequency: 'daily' | 'weekly' | 'never'
+    studentProgressReports: 'weekly' | 'monthly' | 'quarterly'
+  }
+}
+
+// School Admin Profile Extension
+export interface SchoolAdminProfile extends BaseUser {
+  role: 'school_admin'
+
+  schoolId: string
+  schoolName: string
+  districtId?: string
+
+  // Permissions
+  permissions: {
+    manageTeachers: boolean
+    manageStudents: boolean
+    manageClassrooms: boolean
+    viewReports: boolean
+    manageCurriculum: boolean
+  }
+
+  // Background Check
+  backgroundCheckStatus: 'pending' | 'approved' | 'denied' | 'expired'
+  backgroundCheckDate?: Timestamp
+}
+
+// District Admin Profile Extension
+export interface DistrictAdminProfile extends BaseUser {
+  role: 'district_admin'
+
+  districtId: string
+  districtName: string
+
+  // Permissions
+  permissions: {
+    manageSchools: boolean
+    manageStaff: boolean
+    viewAllReports: boolean
+    managePolicies: boolean
+    manageIntegrations: boolean
+  }
+}
+
+// Update UserProfile union type
+export type UserProfileExtended =
+  | StudentProfile
+  | MentorProfile
+  | OrganizationProfile
+  | SponsorProfile
+  | AdminProfile
+  | TeacherProfile
+  | SchoolAdminProfile
+  | DistrictAdminProfile
