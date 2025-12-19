@@ -3,6 +3,9 @@ import { Timestamp } from 'firebase/firestore'
 // Re-export all analytics types from Phase 16
 export * from './analytics'
 
+// Re-export all subscription types
+export * from './subscription'
+
 /**
  * User Role Types - Phase 11: Extended Admin Hierarchy
  * Phase 14: Added Education Roles
@@ -45,6 +48,17 @@ export interface BaseUser {
   isActive: boolean
   emailVerified: boolean
   notificationPreferences?: NotificationPreferences
+
+  // Subscription fields (added for membership system)
+  subscription?: {
+    tier: string // StudentTier | MentorTier | EducatorTier
+    careerTrack?: string // CareerTrack for students
+    status: string // SubscriptionStatus
+    stripeCustomerId?: string
+    stripeSubscriptionId?: string
+    currentPeriodEnd?: Timestamp
+    cancelAtPeriodEnd?: boolean
+  }
 }
 
 /**
