@@ -10,6 +10,7 @@ import {
   limit as firestoreLimit,
 } from 'firebase/firestore'
 import { db } from './firebase'
+import { sendContactConfirmation, sendContactNotification } from './email'
 
 export interface ContactMessage {
   id: string
@@ -33,11 +34,34 @@ export async function submitContactMessage(data: {
   message: string
 }): Promise<void> {
   if (!db) throw new Error('Firebase not configured')
+
+  // Save to Firestore
   await addDoc(collection(db, 'contactMessages'), {
     ...data,
     createdAt: serverTimestamp(),
     status: 'new',
   })
+
+  // Send email notifications (don't block on email failures)
+  try {
+    await Promise.all([
+      sendContactConfirmation({
+        name: data.name,
+        email: data.email,
+        message: data.message,
+      }),
+      sendContactNotification({
+        name: data.name,
+        email: data.email,
+        organization: data.organization,
+        role: data.role || 'Other',
+        message: data.message,
+      }),
+    ])
+  } catch (emailError) {
+    // Log email error but don't fail the submission
+    console.error('Failed to send contact emails:', emailError)
+  }
 }
 
 /**
