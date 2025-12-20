@@ -29,12 +29,17 @@ export default function AboutPage() {
 
   const milestones = [
     {
-      year: "2024",
-      title: "Network Launch",
-      description: "Hidden Treasures Network officially launches to connect aviation and STEM organizations globally."
+      year: "2022-2024",
+      title: "The Beginning",
+      description: "A loosely connected network of passionate educators, mentors, and aviation enthusiasts began sharing knowledge and resources across organizations."
     },
     {
       year: "2025",
+      title: "Network Launch",
+      description: "Hidden Treasures Network officially launches as a central platform to unite over 100 NGOs, educators, schools, colleges, institutions, mentors, and sponsors."
+    },
+    {
+      year: "2026",
       title: "Expansion Phase",
       description: "Growing to 500+ organizations across 50 countries, impacting 100,000 students."
     },
